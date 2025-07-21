@@ -5,6 +5,16 @@ import shutil
 from mkdocs.plugins import BasePlugin
 
 
+def create_symlink(source, target):
+    """Create a junction link from source to target."""
+    if os.name == "nt":
+        # For Windows, use mklink with /J option for junctions
+        os.system(f'mklink /J "{target}" "{source}"')
+    else:
+        # For Unix-like systems, use ln -s for symbolic links
+        os.symlink(source, target)
+
+
 class Gitbook2Mkdocs(BasePlugin):
     def on_page_markdown(self, markdown, page, config, files, **kwargs):
         # Replace GitBook syntax with MkDocs syntax
@@ -27,7 +37,7 @@ class Gitbook2Mkdocs(BasePlugin):
 
         # Create a symbolic link to avoid warnings in the build process
         if os.path.exists(source_dir) and not os.path.exists(dest_dir):
-            os.link(source_dir, dest_dir)
+            create_symlink(source_dir, dest_dir)
 
     def on_post_build(self, config, **kwargs):
         # Define the source directory (.gitbook/assets)
