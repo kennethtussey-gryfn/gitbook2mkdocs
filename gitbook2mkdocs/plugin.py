@@ -27,7 +27,7 @@ class Gitbook2Mkdocs(BasePlugin):
 
         # Create a symbolic link to avoid warnings in the build process
         if os.path.exists(source_dir) and not os.path.exists(dest_dir):
-            os.symlink(source_dir, dest_dir)
+            os.link(source_dir, dest_dir)
 
     def on_post_build(self, config, **kwargs):
         # Define the source directory (.gitbook/assets)
@@ -37,15 +37,15 @@ class Gitbook2Mkdocs(BasePlugin):
         dest_dir = os.path.join(config["site_dir"], "gbassets")
 
         # Define the destination directory (assets/gbtomk)
-        symlink = os.path.join(config["docs_dir"], "gbassets")
+        link = os.path.join(config["docs_dir"], "gbassets")
 
         # If the source directory exists, copy it to the destination
         if os.path.exists(source_dir):
             shutil.copytree(source_dir, dest_dir, dirs_exist_ok=True)
 
         # If the destination directory exists, remove it
-        if os.path.exists(symlink):
-            os.remove(symlink)
+        if os.path.exists(link):
+            os.remove(link)
 
         # No need to replace .gitbook/assets/ with assets/ in HTML files
         # because that's handled in on_page_markdown
